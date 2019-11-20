@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "workspaces": [
+    "packages/ProjetoLPF",
+    "packages/ProjetoLPF-test",
+    "packages_imported/kotlin/1.3.50",
+    "packages_imported/kotlin-test/1.3.50"
+  ],
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "bundledDependencies": [],
+  "name": "ProjetoLPF",
+  "version": "unspecified"
+}

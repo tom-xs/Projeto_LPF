@@ -1,0 +1,22 @@
+sistema
+    -Pessoa
+        .Login
+        .Senha
+        .Lista de Salas
+        -postar (professor pode criar atividade e alunos só podem entregar, checar quem está executando a ação e agir de acordo)
+    -Professor (sub-classe de pessoa)
+        -criar sala
+    -Aluno (sub-classe de pessoa)
+        -cadastrar em sala
+        -publicar no mural
+    -sala
+        .id(nome)
+        .lista de professores
+        .lista de alunos
+        .mural
+    -postagem
+        .tipo(atividade, aviso ou mensagem)
+        .data
+            *se for atividade deve ter uma data de entrega
+        .mensagem
+

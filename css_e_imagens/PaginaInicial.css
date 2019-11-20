@@ -1,0 +1,30 @@
+.cabeçalho{
+    background-color: #fff9c6;
+    text-align:center;
+    margin-top: 10px;
+    padding: 10px 10px 10px 20px;
+}
+
+label, input,a {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.formulario{
+    text-align: center;
+    padding-top: 20px;
+}
+
+label{
+    text-align: left;
+    color: #666;
+    padding-bottom: 5px;
+}
+
+body {
+    background-color: ghostwhite;
+}
+h1,a {
+    color: black;
+    font-family: Inconsolata;
+}
