@@ -3,18 +3,41 @@ package sample
 import io.ktor.application.*
 import io.ktor.html.*
 import io.ktor.http.content.*
+import io.ktor.response.respondRedirect
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.html.*
 import java.io.*
 
+var arquivoContas = File("css_imagens_e_arquivos/Contas.txt")
 
-
+fun checaExistenciaConta(cpf: String): Boolean {
+    arquivoContas.readLines().forEach { x ->
+        if (cpf == x) {
+            println("Conta de cpf igual ja encontrada")
+            return true
+        }
+    }
+    return false
+}
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "127.0.0.1") {
         routing {
+            static("/static") {
+                staticRootFolder = File("build/js/packages/ProjetoLPF/kotlin/")
+                static("kotlin_to_js") {
+                    staticRootFolder = File("build/js/packages_imported/kotlin/1.3.50/")
+                    file("kotlin.js")
+                }
+                static("estilo") {
+                    staticRootFolder = File("css_imagens_e_arquivos")
+                    file("PaginaInicial.css")
+                    file("PaginaCadastro.css")
+                }
+                file("ProjetoLPF.js")
+            }
             get("/validateLogin") {
                 call.respondHtml {
                     var login = call.parameters
@@ -23,19 +46,32 @@ fun main() {
                     }
                 }
             }
-            get("/validateCadastro"){
+            get("/validateCadastro") {
+                var parametros = call.parameters
 
+                if (checaExistenciaConta(parametros["CPF"] as String)) {
+                    //aviso = "conta ja existente, criar outra"
+                    call.respondRedirect("/cadastrar")
+                } else {
+                    arquivoContas.writeText(
+                        "${arquivoContas.readText()}" +
+                                "\n---" +
+                                "\n${parametros["CPF"]}" +
+                                "\n${parametros["senha"]}" +
+                                "\n${parametros["tipo"]}"
+                    )
+                }
+                //aviso = "conta criada com sucesso"
+                call.respondRedirect("/?aviso=conta+criada")
             }
             get("/cadastrar") {
-                var erro = call.parameters.get("erro")
-
                 call.respondHtml {
                     head {
                         link {
                             rel = "stylesheet"
                             href = "static/estilo/PaginaCadastro.css"
                         }
-                        title("POLI Class - LPF!")
+                        title("Tela de Cadastro")
                     }
                     body {
                         div {
@@ -53,18 +89,20 @@ fun main() {
                             form {
                                 //formulario para login
                                 action = "/validateCadastro"
-                                id = "formulario"
+                                id = "formulario_cadastro"
 
                                 label {
                                     htmlFor = "CPFInput"
                                     +"digite seu cpf:"
                                     br {}
                                     input(type = InputType.text) {
+                                        id = "cpf_input_cadastro"
                                         name = "CPF"
                                         value = ""
+                                        autoComplete = false
                                     }
                                 }
-                                br{}
+                                br {}
 
                                 label {
                                     htmlFor = "SenhaInput"
@@ -75,26 +113,47 @@ fun main() {
                                         name = "senha"
                                     }
                                 }
-                                br{}
+                                br {}
                                 label {
                                     htmlFor = "SenhaInput2"
                                     +"confirme a senha:"
                                     br {}
                                     input(type = InputType.password) {
-                                        id = "SenhaInput"
+                                        id = "SenhaInput2"
                                         name = "senha2"
                                     }
                                 }
 
 
-                                br{}
+                                br {}
+                                label {
+                                    htmlFor = "tipoInput"
+                                    +"tipo de conta"
+                                    br {
 
-                                input(InputType.submit) {
+                                    }
+                                    select {
+                                        name = "tipo"
+                                        option {
+                                            value = "aluno"
+                                            +"Aluno"
+                                        }
+                                        option {
+                                            value = "Professor"
+                                            +"Professor"
+                                        }
+                                    }
+                                }
+                                br {}
+
+                                input(InputType.button) {
                                     id = "cadastrarSubmit"
                                     value = "cadastrar"
                                 }
                             }
                         }
+                        script(src = "/static/kotlin_to_js/kotlin.js") {}
+                        script(src = "/static/ProjetoLPF.js") {}
                     }
                 }
             }
@@ -106,7 +165,7 @@ fun main() {
                             rel = "stylesheet"
                             href = "static/estilo/PaginaInicial.css"
                         }
-                        title("POLI Class - LPF!")
+                        title("POLI Class - LPF")
                     }
                     body {
                         div {
@@ -131,22 +190,24 @@ fun main() {
                                 label {
                                     htmlFor = "CPFInput"
                                     +"cpf:"
-                                    br{}
+                                    br {}
                                     input(type = InputType.text) {
+                                        id = "cpf_input"
                                         name = "CPF"
-                                        value = "CPF"
+                                        placeholder = "cpf"
                                     }
                                 }
 
-                                br{}
+                                br {}
 
                                 label {
                                     htmlFor = "SenhaInput"
                                     +"senha:"
-                                    br{}
+                                    br {}
                                     input(type = InputType.password) {
                                         id = "SenhaInput"
                                         name = "senha"
+                                        placeholder = "senha"
                                     }
                                 }
 
@@ -166,23 +227,16 @@ fun main() {
                                 }
                             }
                         }
+                        div {
+                            if (call.parameters["aviso"] == "conta criada")
+                                id = "mostrar aviso conta criada"
+                            else
+                                id = "nao mostrar aviso"
+                        }
                         script(src = "/static/kotlin_to_js/kotlin.js") {}
                         script(src = "/static/ProjetoLPF.js") {}
                     }
                 }
-            }
-            static("/static") {
-                staticRootFolder = File("build/js/packages/ProjetoLPF/kotlin/")
-                static("kotlin_to_js") {
-                    staticRootFolder = File("build/js/packages_imported/kotlin/1.3.50/")
-                    file("kotlin.js")
-                }
-                static("estilo") {
-                    staticRootFolder = File("css_e_imagens")
-                    file("PaginaInicial.css")
-                    file("PaginaCadastro.css")
-                }
-                file("ProjetoLPF.js")
             }
         }
     }.start(wait = true)
