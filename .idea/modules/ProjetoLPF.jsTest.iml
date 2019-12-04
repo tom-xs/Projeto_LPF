@@ -6,8 +6,8 @@
         <dependsOnModuleNames>ProjetoLPF_commonTest</dependsOnModuleNames>
         <sourceSets>
           <sourceSet>ProjetoLPF.jsMain</sourceSet>
-          <sourceSet>ProjetoLPF.commonTest</sourceSet>
           <sourceSet>ProjetoLPF.commonMain</sourceSet>
+          <sourceSet>ProjetoLPF.commonTest</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <externalSystemTestTasks>jsBrowserTest|ProjetoLPF:jsTest|js</externalSystemTestTasks>

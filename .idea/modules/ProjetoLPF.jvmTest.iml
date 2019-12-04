@@ -5,9 +5,9 @@
       <configuration version="3" platform="JVM 1.6" allPlatforms="JVM [1.6]" useProjectSettings="false" isTestModule="true" externalProjectId="ProjetoLPF">
         <dependsOnModuleNames>ProjetoLPF_commonTest</dependsOnModuleNames>
         <sourceSets>
-          <sourceSet>ProjetoLPF.commonTest</sourceSet>
-          <sourceSet>ProjetoLPF.commonMain</sourceSet>
           <sourceSet>ProjetoLPF.jvmMain</sourceSet>
+          <sourceSet>ProjetoLPF.commonMain</sourceSet>
+          <sourceSet>ProjetoLPF.commonTest</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <externalSystemTestTasks>jvmTest|ProjetoLPF:jvmTest|jvm</externalSystemTestTasks>

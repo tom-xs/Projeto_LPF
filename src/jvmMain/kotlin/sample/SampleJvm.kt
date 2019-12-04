@@ -15,12 +15,21 @@ var arquivoContas = File("css_imagens_e_arquivos/Contas.txt")
 fun checaExistenciaConta(cpf: String): Boolean {
     arquivoContas.readLines().forEach { x ->
         if (cpf == x) {
-            println("Conta de cpf igual ja encontrada")
             return true
         }
     }
     return false
 }
+
+fun checaLogin(cpf: String?, senha: String?): Boolean {
+    if (cpf == null || senha == null)
+        return false
+    else {
+        var dados = "$cpf\n$senha"
+        return (arquivoContas.readText().contains(dados))
+    }
+}
+
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "127.0.0.1") {
@@ -39,11 +48,11 @@ fun main() {
                 file("ProjetoLPF.js")
             }
             get("/validateLogin") {
-                call.respondHtml {
-                    var login = call.parameters
-                    body {
-                        +"checar se o login está no arquivos de cadastros , cpf = ${login["CPF"]} e senha = ${login["Senha"]}"
-                    }
+                var login = call.parameters
+                if(checaLogin(login["CPF"], login["senha"])){
+                    call.respondRedirect("/home?${login["CPF"]}")
+                }else{
+                    call.respondRedirect("/?aviso=login+nao+encontrado")
                 }
             }
             get("/validateCadastro") {
@@ -51,18 +60,30 @@ fun main() {
 
                 if (checaExistenciaConta(parametros["CPF"] as String)) {
                     //aviso = "conta ja existente, criar outra"
-                    call.respondRedirect("/cadastrar")
+                    call.respondRedirect("/cadastrar?aviso=cpf+ja+usado")
                 } else {
                     arquivoContas.writeText(
                         "${arquivoContas.readText()}" +
                                 "\n---" +
                                 "\n${parametros["CPF"]}" +
                                 "\n${parametros["senha"]}" +
-                                "\n${parametros["tipo"]}"
+                                "\n${parametros["tipo"]}"+
+                                "\nsalas:"
                     )
                 }
                 //aviso = "conta criada com sucesso"
                 call.respondRedirect("/?aviso=conta+criada")
+            }
+            get("home"){
+                var parametros = call.parameters
+                call.respondHtml {
+                    head{
+
+                    }
+                    body {
+                        +"dale parametros = ${parametros.toString()}"
+                    }
+                }
             }
             get("/cadastrar") {
                 call.respondHtml {
@@ -143,14 +164,21 @@ fun main() {
                                             +"Professor"
                                         }
                                     }
+                                    br{}
+                                    input(InputType.submit) {
+                                        id = "cadastrarSubmit"
+                                        value = "cadastrar"
+                                    }
                                 }
                                 br {}
 
-                                input(InputType.button) {
-                                    id = "cadastrarSubmit"
-                                    value = "cadastrar"
-                                }
                             }
+                        }
+                        div {
+                            if (call.parameters["aviso"] == "cpf ja usado")
+                                id = "erro"
+                            else
+                                id = "nao mostrar aviso"
                         }
                         script(src = "/static/kotlin_to_js/kotlin.js") {}
                         script(src = "/static/ProjetoLPF.js") {}
@@ -172,7 +200,6 @@ fun main() {
                             //cabeçalho
                             classes = setOf("cabeçalho")
                             h1 {
-                                //com isso daqui aprendi que os estilos pras tags são nesse esquema aqui de baixo
                                 a {
                                     href = "/"
                                     +"POLI CLASS"
@@ -228,7 +255,11 @@ fun main() {
                             }
                         }
                         div {
-                            if (call.parameters["aviso"] == "conta criada")
+                            if (call.parameters["aviso"] == "cpf ja usado")
+                                id = "erro"
+                            else if(call.parameters["aviso"] == "login nao encontrado")
+                                id = "login nao encontrado"
+                            else if(call.parameters["aviso"] == "conta criada")
                                 id = "mostrar aviso conta criada"
                             else
                                 id = "nao mostrar aviso"

@@ -78,17 +78,25 @@
     submitInput.onclick = validateCadastro$lambda(cpfInput, senha1, senha2, form);
   }
   function main() {
-    var tmp$, tmp$_0, tmp$_1;
+    var tmp$, tmp$_0, tmp$_1, tmp$_2, tmp$_3;
     println(document.title);
     if (equals(document.title, 'Tela de Cadastro')) {
       formatar('###.###.###-##', Kotlin.isType(tmp$ = document.getElementById('cpf_input_cadastro'), HTMLInputElement) ? tmp$ : throwCCE());
+      if (document.getElementById('erro') != null) {
+        window.alert('cpf j\xE1 usado');
+        (tmp$_0 = document.location) != null ? (tmp$_0.href = '/cadastrar') : null;
+      }
       validateCadastro();
     }
      else if (equals(document.title, 'POLI Class - LPF')) {
-      formatar('###.###.###-##', Kotlin.isType(tmp$_0 = document.getElementById('cpf_input'), HTMLInputElement) ? tmp$_0 : throwCCE());
+      formatar('###.###.###-##', Kotlin.isType(tmp$_1 = document.getElementById('cpf_input'), HTMLInputElement) ? tmp$_1 : throwCCE());
       if (document.getElementById('mostrar aviso conta criada') != null) {
         window.alert('conta criada com sucesso');
-        (tmp$_1 = document.location) != null ? (tmp$_1.href = '/') : null;
+        (tmp$_2 = document.location) != null ? (tmp$_2.href = '/') : null;
+      }
+       else if (document.getElementById('login nao encontrado') != null) {
+        window.alert('conta n\xE3o encontrada');
+        (tmp$_3 = document.location) != null ? (tmp$_3.href = '/') : null;
       }
     }
   }

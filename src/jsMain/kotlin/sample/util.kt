@@ -62,11 +62,19 @@ fun main() {
     println(document.title)
     if (document.title == "Tela de Cadastro") {
         formatar("###.###.###-##", document.getElementById("cpf_input_cadastro") as HTMLInputElement)
+        if(document.getElementById("erro")!=null){
+            window.alert("cpf já usado")
+            document.location?.href ="/cadastrar"
+        }
+
         validateCadastro()
     } else if (document.title == "POLI Class - LPF") {
         formatar("###.###.###-##", document.getElementById("cpf_input") as HTMLInputElement)
         if ((document.getElementById("mostrar aviso conta criada"))!=null) {
             window.alert("conta criada com sucesso")
+            document.location?.href = "/"
+        }else if(document.getElementById("login nao encontrado")!=null){
+            window.alert("conta não encontrada")
             document.location?.href = "/"
         }
     }
