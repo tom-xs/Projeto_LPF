@@ -167,7 +167,56 @@ fun main() {
                 }
             }
             get("sala_de_aula") {
-                call.respondFile(File("src/jvmMain/kotlin/sala_de_aula.html"))
+                call.respondHtml {
+                    head {
+                        link {
+                            rel = "stylesheet"
+                            href = "static/estilo/sala_de_aula.css"
+                        }
+                        meta {
+                            charset = "UTF-8"
+                        }
+                        title("Sala De Aula")
+                    }
+                    body {
+                        div {
+                            id = "layout"
+                            header {
+                                id = "header"
+                                h1 {
+                                    +"Sala De Aula"
+                                }
+                            }
+                            section {
+                                id = "mural"
+                                form {
+                                    id = "form"
+                                    action = "sala_de_aula"
+                                    method = FormMethod.get
+                                    fieldSet {
+                                        id = "message"
+                                        legend {
+                                            +"Mensagem: "
+                                        }
+                                        input(InputType.text) {
+                                            id = "mensagem"
+                                            name = "message"
+                                            maxLength = "500"
+                                            size = "130"
+                                        }
+                                        input(InputType.submit) {
+                                            value = "Postar"
+                                            id = "bottom_submit"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        aside {
+                            id = "students"
+                        }
+                    }
+                }
             }
             get("/home") {
                 val login = call.parameters

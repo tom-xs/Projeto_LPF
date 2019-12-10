@@ -16,4 +16,4 @@ Professor/CPF=111.111.111-11/senha=tomtom/
 ---
 Aluno/CPF=000.000.000-00/senha=tomtom/
 ---
-Sala={id=b/mural=mural=/listacpfs=[111.111.111-11, 117.840.684-97]}
+Sala={id=b/mural=mural=mural=/listacpfs=[111.111.111-11,  117.840.684-97, 117.840.684-97]}
