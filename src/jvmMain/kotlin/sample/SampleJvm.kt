@@ -144,16 +144,13 @@ fun main() {
                 val idSala = parametros["idSala"]
                 if (!salaExist(idSala))
                     if (usuario is Professor) {
-                        //msg sala criada
+                        //todo mensagem sala nova criada
                         addSalaTXT(idSala as String, usuario.cpf)
                         call.respondRedirect(
-                            "/sala_de_aula?CPF=${parametros["cpf"]}?idSala=${idSala.replace(
-                                " ",
-                                "+"
-                            )}"
+                            "/sala_de_aula?CPF=${parametros["cpf"]}?idSala=${idSala.replace(" ", "+")}"
                         )
                     } else {
-                        //todo mensgaem de sala não existente
+                        //todo mensagem de sala não existente
                     }
                 else {
                     var sala = getSala(idSala)
