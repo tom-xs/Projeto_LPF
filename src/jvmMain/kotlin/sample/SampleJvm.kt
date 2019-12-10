@@ -11,8 +11,11 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import kotlinx.html.*
+import sample.Sistema.Aluno
+import sample.Sistema.Professor
+import sample.Sistema.Sala
+import sample.Sistema.Usuario
 import java.io.File
-import sample.Sistema.*
 
 
 var arquivoContas = File("css_imagens_e_arquivos/Contas.txt")
@@ -26,16 +29,15 @@ fun getSala(salaid: String?): Sala? {
             if (x.contains("id=$salaid"))
                 stringCPFs = x
         }
-        var stringMural = stringCPFs.split("/")[1]
-        stringMural = stringMural.substringAfter("mural=")
+        val stringMural = stringCPFs.split("/")[1]
+        val arquivoMural = File("${stringMural.substringAfter("mural=")}")
         val stringLista = stringCPFs.split("/")[2]
         val listaCpfs = mutableListOf<String>()
         (stringLista.substring(stringLista.indexOf("[") + 1, stringLista.indexOf("]"))).split(",").forEach { x ->
             listaCpfs.add(x)
         }
-        println(stringMural)
 
-        return Sala(salaid, stringMural, listaCpfs)
+        return Sala(salaid, arquivoMural, listaCpfs)
     }
 }
 
@@ -64,14 +66,15 @@ fun checaCPFSENHA(cpf: String?, senha: String?): Boolean {
 }
 
 fun addSalaTXT(idSala: String, cpfCriador: String) {
-    val sala = Sala(idSala, listaCPFs = mutableListOf(cpfCriador))
+    val arquivo = File("css_imagens_e_arquivos/MuralSala_$idSala.txt")
+    val sala = Sala(idSala, arquivo, mutableListOf(cpfCriador))
     arquivoContas.writeText(
         arquivoContas.readText() + "\n---\n" + "$sala"
     )
 
 }
 
-fun getUsuarioClasse(cpf: String?): Usuario { // TODO lista
+fun getUsuarioClasse(cpf: String?): Usuario {
     val usuarioString = getUsuario(cpf)
     val cpf2 = usuarioString.split("/")[1].substring(4)
     val senha = usuarioString.split("/")[2].substring(6)
@@ -98,7 +101,7 @@ fun addCpfToSalaFile(sala: Sala) {
 
     val novaString = "Sala={id=${sala.id}/mural=${sala.mural}/listacpfs=$listaString]}"
 
-    var retorno = novodocumento.replace(stringpramodificar, novaString)
+    val retorno = novodocumento.replace(stringpramodificar, novaString)
 
     arquivoContas.writeText(retorno)
 }
@@ -117,6 +120,7 @@ fun main() {
                     file("PaginaInicial.css")
                     file("PaginaCadastro.css")
                     file("sala_de_aula.css")
+                    file("home.css")
                 }
                 file("ProjetoLPF.js")
             }
@@ -144,52 +148,72 @@ fun main() {
                 }
             }
             get("/validateSala") {
-                //todo colocar mensagens
                 val parametros = call.parameters
                 val usuario = getUsuarioClasse(parametros["CPF"])
                 val idSala = parametros["idSala"]
                 if (!salaExist(idSala))
                     if (usuario is Professor) {
-                        //todo mensagem sala nova criada
                         addSalaTXT(idSala as String, usuario.cpf)
                         call.respondRedirect(
-                            "/sala_de_aula?CPF=${parametros["cpf"]}?idSala=${idSala.replace(" ", "+")}"
+                            "/sala_de_aula?aviso=sala+criada&CPF=${parametros["cpf"]}?&idSala=${idSala.replace(
+                                " ",
+                                "+"
+                            )}"
                         )
                     } else {
-                        //todo mensagem de sala não existente
+                        call.respondRedirect(
+                            "/home?aviso=sala+nao+existe&CPF=${parametros["cpf"]}"
+                        )
                     }
                 else {
-                    var sala = getSala(idSala)
+                    val sala = getSala(idSala)
                     if (sala?.listaCPFs!!.contains(usuario.cpf)) {
-                        call.respondRedirect("/sala_de_aula?CPF=${parametros["cpf"]}?idSala=$idSala")
+                        call.respondRedirect("/sala_de_aula?CPF=${parametros["cpf"]}?&idSala=$idSala")
                     } else {
                         if (!sala.listaCPFs.contains(usuario.cpf)) {
                             sala.addusuario(usuario)
                             addCpfToSalaFile(sala)
                         }
-                        call.respondRedirect("/sala_de_aula?CPF=${parametros["cpf"]}?idSala=$idSala")
+                        call.respondRedirect("/sala_de_aula?CPF=${parametros["cpf"]}&idSala=$idSala")
                     }
                 }
             }
             get("sala_de_aula") {
-                call.respondHtml {
-                    head {
-                        link {
-                            rel = "stylesheet"
-                            href = "static/estilo/sala_de_aula.css"
+                val parametros = call.parameters
+
+                if (parametros["message"] != null) {
+                    val mensagem = parametros["message"]
+
+                    getSala(parametros["idSala"])!!.postar(mensagem!!, parametros["CPF"]!!)
+
+                    call.respondRedirect("/sala_de_aula?CPF=${parametros["CPF"]}&idSala=${parametros["idSala"]}")
+                } else
+                    call.respondHtml {
+                        head {
+                            link {
+                                rel = "stylesheet"
+                                href = "static/estilo/sala_de_aula.css"
+                            }
+                            meta {
+                                charset = "UTF-8"
+                            }
+                            title("Sala De Aula")
                         }
-                        meta {
-                            charset = "UTF-8"
-                        }
-                        title("Sala De Aula")
-                    }
-                    body {
-                        div {
-                            id = "layout"
-                            header {
-                                id = "header"
+                        body {
+                            div {
+                                id = "layout"
                                 h1 {
-                                    +"Sala De Aula"
+                                    a {
+                                        +"Poli Class"
+                                    }
+                                }
+                            }
+                            p {}
+                            div {
+                                id = "titulo_sala"
+                                +"Sala de Aula = "
+                                b {
+                                    +"${parametros["idSala"]}"
                                 }
                             }
                             section {
@@ -203,25 +227,61 @@ fun main() {
                                         legend {
                                             +"Mensagem: "
                                         }
-                                        input(InputType.text) {
+                                        textArea {
                                             id = "mensagem"
+
                                             name = "message"
                                             maxLength = "500"
-                                            size = "130"
+                                            cols = "250"
+                                            rows = "2"
                                         }
                                         input(InputType.submit) {
                                             value = "Postar"
                                             id = "bottom_submit"
                                         }
+                                        input(InputType.hidden) {
+                                            name = "CPF"
+                                            value = parametros["CPF"]!!.replace("?", "")
+                                        }
+                                        input(InputType.hidden) {
+                                            name = "idSala"
+                                            value = parametros["idSala"]!!
+                                        }
+                                    }
+                                }
+                                p {}
+                                div {
+                                    id = "Mural"
+                                    getSala(parametros["idSala"] as String)?.mural?.forEachLine { x ->
+                                        if (x.contains("postado por:"))
+                                            b { +x }
+                                        else
+                                            +x
+                                        br {}
                                     }
                                 }
                             }
-                        }
-                        aside {
-                            id = "students"
+                            aside {
+                                id = "students"
+                                h3 {
+                                    id = "lista_cpf_titulo"
+                                    b {
+                                        +"LISTA DE CPFS"
+                                    }
+                                }
+                                ul {
+                                    getSala(parametros["idSala"] as String)!!.listaCPFs.forEach { x ->
+                                        li { +x }
+                                    }
+                                }
+                            }
+                            div {
+                                if (parametros["aviso"] == "sala+criada")
+                                    id = "sala criada"
+
+                            }
                         }
                     }
-                }
             }
             get("/home") {
                 val login = call.parameters
@@ -229,20 +289,38 @@ fun main() {
 
                 call.respondHtml {
                     head {
+                        link {
+                            rel = "stylesheet"
+                            href = "static/estilo/home.css"
+                        }
                         title("Home")
                     }
                     body {
                         div {
-                            // Cabeçalho
-                            style = "text-align:center"
-                            a {
-                                +"Olá ${if (usuario is Aluno) "Aluno" else "Professor"}"
+                            classes = setOf("cabeçalho")
+                            h1 {
+                                a {
+                                    +"POLI CLASS"
+                                }
                             }
+                        }
+                        div {
+                            id = "msg_boas_vindas"
+                            br {}
+                            +"Olá "
+                            b {
+                                if (usuario is Aluno) +"Aluno" else +"Professor"
+                            }
+                            +" de CPF="
+                            b { +"$usuario.cpf" }
                         }
                         div {
                             style = "text-align:center"
                             br {}
-                            +"Escreva o nome da sala para entrar: "
+                            if (usuario is Professor)
+                                +"Escreva o nome da sala para entrar:(se a sala n existir ela será criada)"
+                            else
+                                +"Escreva o nome da sala para entrar:"
                             form {
                                 action = "/validateSala?"
                                 label {
@@ -258,12 +336,21 @@ fun main() {
                                         value = "Ir à Sala"
                                     }
                                     input(InputType.hidden) {
+                                        id = "cpfInput"
                                         name = "CPF"
                                         value = usuario.cpf
                                     }
                                 }
                             }
                         }
+                        div {
+                            if (call.parameters["aviso"] == "sala nao existe")
+                                id = "sala nao existe"
+                            else
+                                id = "sem erro"
+                        }
+                        script(src = "/static/kotlin_to_js/kotlin.js") {}
+                        script(src = "/static/ProjetoLPF.js") {}
                     }
                 }
             }

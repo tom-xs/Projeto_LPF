@@ -20,19 +20,19 @@
   var toBoxedChar = Kotlin.toBoxedChar;
   function formatar$lambda(closure$campodetexto, closure$mascara) {
     return function (it) {
-      var i = closure$campodetexto.v.value.length;
+      var i = closure$campodetexto.value.length;
       var saida = closure$mascara.substring(0, 1);
       var texto = closure$mascara.substring(i);
       if (!equals(texto.substring(0, 1), saida)) {
-        closure$campodetexto.v.value = closure$campodetexto.v.value + texto.substring(0, 1);
+        closure$campodetexto.value = closure$campodetexto.value + texto.substring(0, 1);
       }
       return Unit;
     };
   }
   function formatar(mascara, elemento) {
-    var campodetexto = {v: elemento};
-    campodetexto.v.maxLength = 14;
-    campodetexto.v.onkeypress = formatar$lambda(campodetexto, mascara);
+    var campodetexto = elemento;
+    campodetexto.maxLength = 14;
+    campodetexto.onkeypress = formatar$lambda(campodetexto, mascara);
   }
   function auxValidateCadastro(cpfInput, senha1, senha2) {
     if (!equals(senha1, senha2)) {
@@ -77,13 +77,12 @@
   }
   function main$lambda_0(x) {
     var tmp$;
-    if (x.charCode === 13)
-      if (validateCadastro() === true)
-        (Kotlin.isType(tmp$ = document.getElementById('formulario_cadastro'), HTMLFormElement) ? tmp$ : throwCCE()).submit();
+    if (x.charCode === 13 && validateCadastro() === true)
+      (Kotlin.isType(tmp$ = document.getElementById('formulario_cadastro'), HTMLFormElement) ? tmp$ : throwCCE()).submit();
     return Unit;
   }
   function main() {
-    var tmp$, tmp$_0, tmp$_1, tmp$_2, tmp$_3, tmp$_4;
+    var tmp$, tmp$_0, tmp$_1, tmp$_2, tmp$_3, tmp$_4, tmp$_5, tmp$_6;
     println(document.title);
     if (equals(document.title, 'Tela de Cadastro')) {
       formatar('###.###.###-##', Kotlin.isType(tmp$ = document.getElementById('cpf_input_cadastro'), HTMLInputElement) ? tmp$ : throwCCE());
@@ -103,6 +102,14 @@
        else if (document.getElementById('login nao encontrado') != null) {
         window.alert('conta n\xE3o encontrada');
         (tmp$_4 = document.location) != null ? (tmp$_4.href = '/') : null;
+      }
+    }
+     else if (equals(document.title, 'Home')) {
+      println('pagina Home achada');
+      if (document.getElementById('sala nao existe') != null) {
+        println('sala nao existe achado');
+        window.alert('sala n\xE3o existe');
+        (tmp$_6 = document.location) != null ? (tmp$_6.href = '/home?CPF=' + (Kotlin.isType(tmp$_5 = document.getElementById('cpfInput'), HTMLInputElement) ? tmp$_5 : throwCCE()).value) : null;
       }
     }
   }

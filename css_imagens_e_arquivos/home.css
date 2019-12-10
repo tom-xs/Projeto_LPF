@@ -1,0 +1,11 @@
+.cabeçalho {
+    background-color: #fff9c6;
+    text-align: center;
+    margin-top: 10px;
+    padding: 10px 10px 10px 20px;
+}
+
+div#msg_boas_vindas {
+    text-align: center;
+    font-size: 15px;
+}

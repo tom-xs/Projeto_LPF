@@ -1,9 +1,20 @@
 div#layout {
-    width: 1320px;
-    margin: -10px auto 0px auto;
-    padding: 10px;
+    background-color: #fff9c6;
+    text-align: center;
+    margin-top: 10px;
+    padding: 10px 10px 10px 20px;
 }
 
+div#titulo_sala {
+    text-align: center;
+    font-size: 18px
+}
+
+textarea#mensagem {
+    resize: none;
+    height: 40px;
+    width: 1100px;
+}
 header#header {
     border-bottom: 2px #000000 solid;
     height: 150px;
@@ -16,19 +27,24 @@ header#header h1 {
 
 section#mural {
     display: block;
-    width: 1048px;
+    width: 1200px;
     float: right;
     border-left: 2px solid #000000;
     height: 500px;
+    padding: 10px 10px 10px 20px;
 }
 
 aside#students {
+    padding: 10px 10px 50px 20px;
     display: block;
-    width: 270px;
+    width: 180px;
     float: left;
     height: 500px;
 }
 
+h3#lista_cpf_titulo {
+    text-align: center;
+}
 input#bottom_submit {
     width: 68px;
     height: 20px;

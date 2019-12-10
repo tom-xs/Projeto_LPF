@@ -1,13 +1,14 @@
 package sample
 
-import org.w3c.dom.*
-import org.w3c.dom.events.KeyboardEvent
+import org.w3c.dom.HTMLFormElement
+import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.get
 import kotlin.browser.document
 import kotlin.browser.window
 
 @JsName("formatar")
 fun formatar(mascara: String, elemento: HTMLInputElement) {
-    val campodetexto = elemento //document.getElementById("cpf_input") as HTMLInputElement
+    val campodetexto = elemento
 
     campodetexto.maxLength = 14
 
@@ -60,9 +61,9 @@ fun main() {
     println(document.title)
     if (document.title == "Tela de Cadastro") {
         formatar("###.###.###-##", document.getElementById("cpf_input_cadastro") as HTMLInputElement)
-        if(document.getElementById("erro")!=null){
+        if (document.getElementById("erro") != null) {
             window.alert("cpf já usado")
-            document.location?.href ="/cadastrar"
+            document.location?.href = "/cadastrar"
         }
         (document.getElementById("cadastrarbtn") as HTMLInputElement).onclick = { x ->
             if (validateCadastro() == true)
@@ -75,12 +76,20 @@ fun main() {
         }
     } else if (document.title == "POLI Class - LPF") {
         formatar("###.###.###-##", document.getElementById("cpf_input") as HTMLInputElement)
-        if ((document.getElementById("mostrar aviso conta criada"))!=null) {
+        if ((document.getElementById("mostrar aviso conta criada")) != null) {
             window.alert("conta criada com sucesso")
             document.location?.href = "/"
-        }else if(document.getElementById("login nao encontrado")!=null){
+        } else if (document.getElementById("login nao encontrado") != null) {
             window.alert("conta não encontrada")
             document.location?.href = "/"
         }
+    } else if (document.title == "Home") {
+        println("pagina Home achada")
+        if (document.getElementById("sala nao existe") != null) {
+            println("sala nao existe achado")
+            window.alert("sala não existe")
+            document.location?.href = "/home?CPF=${(document.getElementById("cpfInput") as HTMLInputElement).value}"
+        }
+
     }
 }
