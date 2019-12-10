@@ -5,7 +5,6 @@ import io.ktor.html.respondHtml
 import io.ktor.http.content.file
 import io.ktor.http.content.static
 import io.ktor.http.content.staticRootFolder
-import io.ktor.response.respondFile
 import io.ktor.response.respondRedirect
 import io.ktor.routing.get
 import io.ktor.routing.routing
@@ -27,13 +26,14 @@ fun getSala(salaid: String?): Sala? {
             if (x.contains("id=$salaid"))
                 stringCPFs = x
         }
-        val stringMural = stringCPFs.split("/")[1]
-        stringMural.substringAfter("mural=")
+        var stringMural = stringCPFs.split("/")[1]
+        stringMural = stringMural.substringAfter("mural=")
         val stringLista = stringCPFs.split("/")[2]
         val listaCpfs = mutableListOf<String>()
         (stringLista.substring(stringLista.indexOf("[") + 1, stringLista.indexOf("]"))).split(",").forEach { x ->
             listaCpfs.add(x)
         }
+        println(stringMural)
 
         return Sala(salaid, stringMural, listaCpfs)
     }
@@ -85,14 +85,20 @@ fun addCpfToSalaFile(sala: Sala) {
     val novodocumento: String = arquivoContas.readText()
     var stringpramodificar = ""
     arquivoContas.readLines().forEach { x ->
-        if (x.contains(sala.id))
+        if (x.contains("Sala={id=${sala.id}/"))
             stringpramodificar = x
     }
+    var listaString = "["
+    sala.listaCPFs.forEach { x ->
+        if (sala.listaCPFs[sala.listaCPFs.size - 1] != x)
+            listaString += "$x,"
+        else
+            listaString += "$x"
+    }
 
-    var retorno = novodocumento.replace(
-        stringpramodificar,
-        "Sala={id=${sala.id}/mural=${sala.mural}/listacpfs=${sala.listaCPFs}}"
-    )
+    val novaString = "Sala={id=${sala.id}/mural=${sala.mural}/listacpfs=$listaString]}"
+
+    var retorno = novodocumento.replace(stringpramodificar, novaString)
 
     arquivoContas.writeText(retorno)
 }
@@ -157,8 +163,10 @@ fun main() {
                     if (sala?.listaCPFs!!.contains(usuario.cpf)) {
                         call.respondRedirect("/sala_de_aula?CPF=${parametros["cpf"]}?idSala=$idSala")
                     } else {
-                        sala.addusuario(usuario)
-                        addCpfToSalaFile(sala)
+                        if (!sala.listaCPFs.contains(usuario.cpf)) {
+                            sala.addusuario(usuario)
+                            addCpfToSalaFile(sala)
+                        }
                         call.respondRedirect("/sala_de_aula?CPF=${parametros["cpf"]}?idSala=$idSala")
                     }
                 }

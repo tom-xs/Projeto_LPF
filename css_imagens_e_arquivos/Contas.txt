@@ -1,3 +1,9 @@
+Aluno/CPF=555.555.555-55/senha=tomtom/
+---
+Professor/CPF=333.333.333-33/senha=tomtom/
+---
+Aluno/CPF=222.222.222-22/senha=tomtom/
+---
 Aluno/CPF=117.840.684-97/senha=tomtom/
 ---
 Aluno/CPF=381.029.830-91/senha=tomtom/
@@ -16,4 +22,4 @@ Professor/CPF=111.111.111-11/senha=tomtom/
 ---
 Aluno/CPF=000.000.000-00/senha=tomtom/
 ---
-Sala={id=b/mural=mural=mural=/listacpfs=[111.111.111-11,  117.840.684-97, 117.840.684-97]}
+Sala={id=a/mural=/listacpfs=[111.111.111-11,000.000.000-00,117.840.684-97]}
