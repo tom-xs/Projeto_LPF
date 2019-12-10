@@ -11,6 +11,7 @@
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <externalSystemTestTasks>jsBrowserTest|ProjetoLPF:jsTest|js</externalSystemTestTasks>
+        <testOutputPath>$MODULE_DIR$/../../build/js/packages/ProjetoLPF-test/kotlin/ProjetoLPF-test.js</testOutputPath>
         <compilerSettings />
         <compilerArguments>
           <option name="outputFile" value="$MODULE_DIR$/../../build/js/packages/ProjetoLPF-test/kotlin/ProjetoLPF-test.js" />

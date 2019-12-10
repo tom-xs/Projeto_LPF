@@ -13,9 +13,9 @@ var config = {
 
 // entry
 if (!config.entry) config.entry = [];
-config.entry.push("/home/tom/intellij ws/Kotlin/Projeto_de_Lpf/ProjetoLPF/build/js/packages/ProjetoLPF/kotlin/ProjetoLPF.js");
+config.entry.push("C:\\Users\\oipxt\\Desktop\\LPF\\build\\js\\packages\\ProjetoLPF\\kotlin\\ProjetoLPF.js");
 config.output = {
-    path: "/home/tom/intellij ws/Kotlin/Projeto_de_Lpf/ProjetoLPF/build/distributions",
+    path: "C:\\Users\\oipxt\\Desktop\\LPF\\build\\distributions",
     filename: "ProjetoLPF-unspecified.js"
 };
 
@@ -35,7 +35,7 @@ config.entry.push('source-map-support/browser-source-map-support.js');
 var util = require('util');
 var fs = require("fs");
 var evaluatedConfig = util.inspect(config, {showHidden: false, depth: null, compact: false});
-fs.writeFile("/home/tom/intellij ws/Kotlin/Projeto_de_Lpf/ProjetoLPF/build/reports/webpack/ProjetoLPF/webpack.config.evaluated.js", evaluatedConfig, function (err) {});
+fs.writeFile("C:\\Users\\oipxt\\Desktop\\LPF\\build\\reports\\webpack\\ProjetoLPF\\webpack.config.evaluated.js", evaluatedConfig, function (err) {});
 
 // Report progress to console
 (function(config) {
@@ -43,7 +43,7 @@ fs.writeFile("/home/tom/intellij ws/Kotlin/Projeto_de_Lpf/ProjetoLPF/build/repor
     const handler = (percentage, message, ...args) => {
         const p = percentage*100;
         let msg = Math.trunc(p/100) + Math.trunc(p%100) + '% ' + message + ' ' + args.join(' ');
-        msg = msg.replace(new RegExp("/home/tom/intellij ws/Kotlin/Projeto_de_Lpf/ProjetoLPF/build/js", 'g'), '');
+        msg = msg.replace(new RegExp("C:\\Users\\oipxt\\Desktop\\LPF\\build\\js", 'g'), '');
         console.log(msg);
     };
 

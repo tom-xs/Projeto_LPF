@@ -1,22 +1,23 @@
 package sample
 
 import org.w3c.dom.*
+import org.w3c.dom.events.KeyboardEvent
 import kotlin.browser.document
 import kotlin.browser.window
 
 @JsName("formatar")
 fun formatar(mascara: String, elemento: HTMLInputElement) {
-    var campodetexto = elemento //document.getElementById("cpf_input") as HTMLInputElement
+    val campodetexto = elemento //document.getElementById("cpf_input") as HTMLInputElement
 
     campodetexto.maxLength = 14
 
     campodetexto.onkeypress = {
-        var i = campodetexto.value.length;
-        var saida = mascara.substring(0, 1);
-        var texto = mascara.substring(i)
+        val i = campodetexto.value.length
+        val saida = mascara.substring(0, 1)
+        val texto = mascara.substring(i)
 
         if (texto.substring(0, 1) != saida) {
-            campodetexto.value += texto.substring(0, 1);
+            campodetexto.value += texto.substring(0, 1)
         }
     }
 
@@ -44,17 +45,14 @@ fun auxValidateCadastro(cpfInput: String, senha1: String, senha2: String): Boole
 
 }
 
-fun validateCadastro() {
-    var form = document.getElementById("formulario_cadastro") as HTMLFormElement
-    var cpfInput = form.get("CPF") as HTMLInputElement
-    var senha1 = form.get("senha") as HTMLInputElement
-    var senha2 = form.get("senha2") as HTMLInputElement
-    var submitInput = document.getElementById("cadastrarSubmit") as HTMLInputElement
+fun validateCadastro(): Boolean {
+    val form = document.getElementById("formulario_cadastro") as HTMLFormElement
+    val cpfInput = form.get("CPF") as HTMLInputElement
+    val senha1 = form.get("senha") as HTMLInputElement
+    val senha2 = form.get("senha2") as HTMLInputElement
 
-    submitInput.onclick = {
-        if (auxValidateCadastro(cpfInput.value, senha1.value, senha2.value))
-            form.submit()
-    }
+    return auxValidateCadastro(cpfInput.value, senha1.value, senha2.value)
+
 }
 
 
@@ -66,8 +64,15 @@ fun main() {
             window.alert("cpf já usado")
             document.location?.href ="/cadastrar"
         }
+        (document.getElementById("cadastrarbtn") as HTMLInputElement).onclick = { x ->
+            if (validateCadastro() == true)
+                (document.getElementById("formulario_cadastro") as HTMLFormElement).submit()
+        }
 
-        validateCadastro()
+        document.onkeypress = { x ->
+            if (x.charCode == 13 && validateCadastro() == true)
+                (document.getElementById("formulario_cadastro") as HTMLFormElement).submit()
+        }
     } else if (document.title == "POLI Class - LPF") {
         formatar("###.###.###-##", document.getElementById("cpf_input") as HTMLInputElement)
         if ((document.getElementById("mostrar aviso conta criada"))!=null) {

@@ -1,35 +1,101 @@
 package sample
 
-import io.ktor.application.*
-import io.ktor.html.*
-import io.ktor.http.content.*
+import io.ktor.application.call
+import io.ktor.html.respondHtml
+import io.ktor.http.content.file
+import io.ktor.http.content.static
+import io.ktor.http.content.staticRootFolder
+import io.ktor.response.respondFile
 import io.ktor.response.respondRedirect
-import io.ktor.routing.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
+import io.ktor.routing.get
+import io.ktor.routing.routing
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import kotlinx.html.*
-import java.io.*
+import java.io.File
+import sample.Sistema.*
+
 
 var arquivoContas = File("css_imagens_e_arquivos/Contas.txt")
 
+fun getSala(salaid: String?): Sala? {
+    if (salaid == null)
+        return null
+    else {
+        var stringCPFs = ""
+        arquivoContas.readLines().forEach() { x ->
+            if (x.contains("id=$salaid"))
+                stringCPFs = x
+        }
+        val stringMural = stringCPFs.split("/")[1]
+        stringMural.substringAfter("mural=")
+        val stringLista = stringCPFs.split("/")[2]
+        val listaCpfs = mutableListOf<String>()
+        (stringLista.substring(stringLista.indexOf("[") + 1, stringLista.indexOf("]"))).split(",").forEach { x ->
+            listaCpfs.add(x)
+        }
+
+        return Sala(salaid, stringMural, listaCpfs)
+    }
+}
+
+fun getUsuario(cpf: String?): String {
+    arquivoContas.readLines().forEach { if (it.contains("/CPF=$cpf/")) return it }
+    return ""
+}
+
 fun checaExistenciaConta(cpf: String): Boolean {
     arquivoContas.readLines().forEach { x ->
-        if (cpf == x) {
+        if (x.contains("/CPF=$cpf/")) {
             return true
         }
     }
     return false
 }
 
-fun checaLogin(cpf: String?, senha: String?): Boolean {
-    if (cpf == null || senha == null)
-        return false
-    else {
-        var dados = "$cpf\n$senha"
-        return (arquivoContas.readText().contains(dados))
-    }
+fun salaExist(idSala: String?): Boolean {
+    arquivoContas.readLines().forEach { if (it.contains("id=$idSala/")) return true }
+    return false
 }
 
+fun checaCPFSENHA(cpf: String?, senha: String?): Boolean {
+    arquivoContas.readLines().forEach { if (it.contains("/CPF=$cpf/senha=$senha/")) return true }
+    return false
+}
+
+fun addSalaTXT(idSala: String, cpfCriador: String) {
+    val sala = Sala(idSala, listaCPFs = mutableListOf(cpfCriador))
+    arquivoContas.writeText(
+        arquivoContas.readText() + "\n---\n" + "$sala"
+    )
+
+}
+
+fun getUsuarioClasse(cpf: String?): Usuario { // TODO lista
+    val usuarioString = getUsuario(cpf)
+    val cpf2 = usuarioString.split("/")[1].substring(4)
+    val senha = usuarioString.split("/")[2].substring(6)
+    return if (usuarioString.split("/")[0] == "Aluno")
+        Aluno(cpf2, senha)
+    else
+        Professor(cpf2, senha)
+}
+
+fun addCpfToSalaFile(sala: Sala) {
+    val novodocumento: String = arquivoContas.readText()
+    var stringpramodificar = ""
+    arquivoContas.readLines().forEach { x ->
+        if (x.contains(sala.id))
+            stringpramodificar = x
+    }
+
+    var retorno = novodocumento.replace(
+        stringpramodificar,
+        "Sala={id=${sala.id}/mural=${sala.mural}/listacpfs=${sala.listaCPFs}}"
+    )
+
+    arquivoContas.writeText(retorno)
+}
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "127.0.0.1") {
@@ -44,44 +110,106 @@ fun main() {
                     staticRootFolder = File("css_imagens_e_arquivos")
                     file("PaginaInicial.css")
                     file("PaginaCadastro.css")
+                    file("sala_de_aula.css")
                 }
                 file("ProjetoLPF.js")
             }
             get("/validateLogin") {
-                var login = call.parameters
-                if(checaLogin(login["CPF"], login["senha"])){
-                    call.respondRedirect("/home?${login["CPF"]}")
-                }else{
+                val login = call.parameters
+                if (checaCPFSENHA(login["CPF"], login["senha"])) {
+                    call.respondRedirect("/home?CPF=${login["CPF"]}")
+                } else {
                     call.respondRedirect("/?aviso=login+nao+encontrado")
                 }
             }
             get("/validateCadastro") {
-                var parametros = call.parameters
+                val parametros = call.parameters
 
                 if (checaExistenciaConta(parametros["CPF"] as String)) {
                     //aviso = "conta ja existente, criar outra"
                     call.respondRedirect("/cadastrar?aviso=cpf+ja+usado")
                 } else {
                     arquivoContas.writeText(
-                        "${arquivoContas.readText()}" +
-                                "\n---" +
-                                "\n${parametros["CPF"]}" +
-                                "\n${parametros["senha"]}" +
-                                "\n${parametros["tipo"]}"+
-                                "\nsalas:"
+                        "${parametros["tipo"]}/CPF=${parametros["CPF"]}/senha=${parametros["senha"]}/"
+                                + "\n---\n" + arquivoContas.readText()
                     )
+                    //aviso = "conta criada com sucesso"
+                    call.respondRedirect("/?aviso=conta+criada")
                 }
-                //aviso = "conta criada com sucesso"
-                call.respondRedirect("/?aviso=conta+criada")
             }
-            get("home"){
-                var parametros = call.parameters
-                call.respondHtml {
-                    head{
+            get("/validateSala") {
+                //todo colocar mensagens
+                val parametros = call.parameters
+                val usuario = getUsuarioClasse(parametros["CPF"])
+                val idSala = parametros["idSala"]
+                if (!salaExist(idSala))
+                    if (usuario is Professor) {
+                        //msg sala criada
+                        addSalaTXT(idSala as String, usuario.cpf)
+                        call.respondRedirect(
+                            "/sala_de_aula?CPF=${parametros["cpf"]}?idSala=${idSala.replace(
+                                " ",
+                                "+"
+                            )}"
+                        )
+                    } else {
+                        //todo mensgaem de sala não existente
+                    }
+                else {
+                    var sala = getSala(idSala)
+                    if (sala?.listaCPFs!!.contains(usuario.cpf)) {
+                        call.respondRedirect("/sala_de_aula?CPF=${parametros["cpf"]}?idSala=$idSala")
+                    } else {
+                        sala.addusuario(usuario)
+                        addCpfToSalaFile(sala)
+                        call.respondRedirect("/sala_de_aula?CPF=${parametros["cpf"]}?idSala=$idSala")
+                    }
+                }
+            }
+            get("sala_de_aula") {
+                call.respondFile(File("src/jvmMain/kotlin/sala_de_aula.html"))
+            }
+            get("/home") {
+                val login = call.parameters
+                val usuario = getUsuarioClasse(login["CPF"])
 
+                call.respondHtml {
+                    head {
+                        title("Home")
                     }
                     body {
-                        +"dale parametros = ${parametros.toString()}"
+                        div {
+                            // Cabeçalho
+                            style = "text-align:center"
+                            a {
+                                +"Olá ${if (usuario is Aluno) "Aluno" else "Professor"}"
+                            }
+                        }
+                        div {
+                            style = "text-align:center"
+                            br {}
+                            +"Escreva o nome da sala para entrar: "
+                            form {
+                                action = "/validateSala?"
+                                label {
+                                    htmlFor = "IDSalaInput"
+                                    br {}
+                                    input(type = InputType.text) {
+                                        id = "idSala_input"
+                                        name = "idSala"
+                                        placeholder = "Nome da Sala"
+                                    }
+                                    input(InputType.submit) {
+                                        id = "idSala_button"
+                                        value = "Ir à Sala"
+                                    }
+                                    input(InputType.hidden) {
+                                        name = "CPF"
+                                        value = usuario.cpf
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -156,7 +284,7 @@ fun main() {
                                     select {
                                         name = "tipo"
                                         option {
-                                            value = "aluno"
+                                            value = "Aluno"
                                             +"Aluno"
                                         }
                                         option {
@@ -164,9 +292,9 @@ fun main() {
                                             +"Professor"
                                         }
                                     }
-                                    br{}
-                                    input(InputType.submit) {
-                                        id = "cadastrarSubmit"
+                                    br {}
+                                    input(InputType.button) {
+                                        id = "cadastrarbtn"
                                         value = "cadastrar"
                                     }
                                 }
@@ -257,9 +385,9 @@ fun main() {
                         div {
                             if (call.parameters["aviso"] == "cpf ja usado")
                                 id = "erro"
-                            else if(call.parameters["aviso"] == "login nao encontrado")
+                            else if (call.parameters["aviso"] == "login nao encontrado")
                                 id = "login nao encontrado"
-                            else if(call.parameters["aviso"] == "conta criada")
+                            else if (call.parameters["aviso"] == "conta criada")
                                 id = "mostrar aviso conta criada"
                             else
                                 id = "nao mostrar aviso"

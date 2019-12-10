@@ -61,24 +61,29 @@
     }
     return true;
   }
-  function validateCadastro$lambda(closure$cpfInput, closure$senha1, closure$senha2, closure$form) {
-    return function (it) {
-      if (auxValidateCadastro(closure$cpfInput.v.value, closure$senha1.v.value, closure$senha2.v.value))
-        closure$form.v.submit();
-      return Unit;
-    };
-  }
   function validateCadastro() {
-    var tmp$, tmp$_0, tmp$_1, tmp$_2, tmp$_3;
-    var form = {v: Kotlin.isType(tmp$ = document.getElementById('formulario_cadastro'), HTMLFormElement) ? tmp$ : throwCCE()};
-    var cpfInput = {v: Kotlin.isType(tmp$_0 = form.v['CPF'], HTMLInputElement) ? tmp$_0 : throwCCE()};
-    var senha1 = {v: Kotlin.isType(tmp$_1 = form.v['senha'], HTMLInputElement) ? tmp$_1 : throwCCE()};
-    var senha2 = {v: Kotlin.isType(tmp$_2 = form.v['senha2'], HTMLInputElement) ? tmp$_2 : throwCCE()};
-    var submitInput = Kotlin.isType(tmp$_3 = document.getElementById('cadastrarSubmit'), HTMLInputElement) ? tmp$_3 : throwCCE();
-    submitInput.onclick = validateCadastro$lambda(cpfInput, senha1, senha2, form);
+    var tmp$, tmp$_0, tmp$_1, tmp$_2;
+    var form = Kotlin.isType(tmp$ = document.getElementById('formulario_cadastro'), HTMLFormElement) ? tmp$ : throwCCE();
+    var cpfInput = Kotlin.isType(tmp$_0 = form['CPF'], HTMLInputElement) ? tmp$_0 : throwCCE();
+    var senha1 = Kotlin.isType(tmp$_1 = form['senha'], HTMLInputElement) ? tmp$_1 : throwCCE();
+    var senha2 = Kotlin.isType(tmp$_2 = form['senha2'], HTMLInputElement) ? tmp$_2 : throwCCE();
+    return auxValidateCadastro(cpfInput.value, senha1.value, senha2.value);
+  }
+  function main$lambda(x) {
+    var tmp$;
+    if (validateCadastro() === true)
+      (Kotlin.isType(tmp$ = document.getElementById('formulario_cadastro'), HTMLFormElement) ? tmp$ : throwCCE()).submit();
+    return Unit;
+  }
+  function main$lambda_0(x) {
+    var tmp$;
+    if (x.charCode === 13)
+      if (validateCadastro() === true)
+        (Kotlin.isType(tmp$ = document.getElementById('formulario_cadastro'), HTMLFormElement) ? tmp$ : throwCCE()).submit();
+    return Unit;
   }
   function main() {
-    var tmp$, tmp$_0, tmp$_1, tmp$_2, tmp$_3;
+    var tmp$, tmp$_0, tmp$_1, tmp$_2, tmp$_3, tmp$_4;
     println(document.title);
     if (equals(document.title, 'Tela de Cadastro')) {
       formatar('###.###.###-##', Kotlin.isType(tmp$ = document.getElementById('cpf_input_cadastro'), HTMLInputElement) ? tmp$ : throwCCE());
@@ -86,17 +91,18 @@
         window.alert('cpf j\xE1 usado');
         (tmp$_0 = document.location) != null ? (tmp$_0.href = '/cadastrar') : null;
       }
-      validateCadastro();
+      (Kotlin.isType(tmp$_1 = document.getElementById('cadastrarbtn'), HTMLInputElement) ? tmp$_1 : throwCCE()).onclick = main$lambda;
+      document.onkeypress = main$lambda_0;
     }
      else if (equals(document.title, 'POLI Class - LPF')) {
-      formatar('###.###.###-##', Kotlin.isType(tmp$_1 = document.getElementById('cpf_input'), HTMLInputElement) ? tmp$_1 : throwCCE());
+      formatar('###.###.###-##', Kotlin.isType(tmp$_2 = document.getElementById('cpf_input'), HTMLInputElement) ? tmp$_2 : throwCCE());
       if (document.getElementById('mostrar aviso conta criada') != null) {
         window.alert('conta criada com sucesso');
-        (tmp$_2 = document.location) != null ? (tmp$_2.href = '/') : null;
+        (tmp$_3 = document.location) != null ? (tmp$_3.href = '/') : null;
       }
        else if (document.getElementById('login nao encontrado') != null) {
         window.alert('conta n\xE3o encontrada');
-        (tmp$_3 = document.location) != null ? (tmp$_3.href = '/') : null;
+        (tmp$_4 = document.location) != null ? (tmp$_4.href = '/') : null;
       }
     }
   }

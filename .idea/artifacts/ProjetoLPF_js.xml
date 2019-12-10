@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="ProjetoLPF-js">
-    <output-path>$PROJECT_DIR$/build/libs</output-path>
+    <output-path>C:\Users\oipxt\Desktop\LPF\build\libs</output-path>
     <root id="archive" name="ProjetoLPF-js.jar">
       <element id="module-output" name="ProjetoLPF.jsMain" />
     </root>
