@@ -87,6 +87,7 @@ fun getUsuarioClasse(cpf: String?): Usuario {
 fun addCpfToSalaFile(sala: Sala) {
     val novodocumento: String = arquivoContas.readText()
     var stringpramodificar = ""
+    if(arquivoContas.exists())
     arquivoContas.readLines().forEach { x ->
         if (x.contains("Sala={id=${sala.id}/"))
             stringpramodificar = x
@@ -126,11 +127,16 @@ fun main() {
             }
             get("/validateLogin") {
                 val login = call.parameters
-                if (checaCPFSENHA(login["CPF"], login["senha"])) {
-                    call.respondRedirect("/home?CPF=${login["CPF"]}")
-                } else {
+                if (!arquivoContas.exists()) {
+                    arquivoContas.writeText("")
                     call.respondRedirect("/?aviso=login+nao+encontrado")
                 }
+                else
+                    if (checaCPFSENHA(login["CPF"], login["senha"])) {
+                        call.respondRedirect("/home?CPF=${login["CPF"]}")
+                    } else {
+                        call.respondRedirect("/?aviso=login+nao+encontrado")
+                    }
             }
             get("/validateCadastro") {
                 val parametros = call.parameters
@@ -252,13 +258,14 @@ fun main() {
                                 p {}
                                 div {
                                     id = "Mural"
-                                    getSala(parametros["idSala"] as String)?.mural?.forEachLine { x ->
-                                        if (x.contains("postado por:"))
-                                            b { +x }
-                                        else
-                                            +x
-                                        br {}
-                                    }
+                                    if (getSala(parametros["idSala"])!!.mural.exists())
+                                        getSala(parametros["idSala"] as String)?.mural?.forEachLine { x ->
+                                            if (x.contains("postado por:"))
+                                                b { +x }
+                                            else
+                                                +x
+                                            br {}
+                                        }
                                 }
                             }
                             aside {
@@ -312,7 +319,7 @@ fun main() {
                                 if (usuario is Aluno) +"Aluno" else +"Professor"
                             }
                             +" de CPF="
-                            b { +"$usuario.cpf" }
+                            b { +"${usuario.cpf}" }
                         }
                         div {
                             style = "text-align:center"

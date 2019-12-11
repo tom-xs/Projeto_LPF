@@ -5,8 +5,8 @@
       <configuration version="3" platform="JavaScript " allPlatforms="JS []" useProjectSettings="false" isTestModule="true" externalProjectId="ProjetoLPF">
         <dependsOnModuleNames>ProjetoLPF_commonTest</dependsOnModuleNames>
         <sourceSets>
-          <sourceSet>ProjetoLPF.jsMain</sourceSet>
           <sourceSet>ProjetoLPF.commonMain</sourceSet>
+          <sourceSet>ProjetoLPF.jsMain</sourceSet>
           <sourceSet>ProjetoLPF.commonTest</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>

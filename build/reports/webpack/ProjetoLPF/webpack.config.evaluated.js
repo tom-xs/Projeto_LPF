@@ -18,11 +18,12 @@
     ]
   },
   entry: [
-    'C:\\Users\\oipxt\\Desktop\\LPF\\build\\js\\packages\\ProjetoLPF\\kotlin\\ProjetoLPF.js',
+    'C:\\Users\\oipxt\\Desktop\\LPF ' +
+      'teste\\build\\js\\packages\\ProjetoLPF\\kotlin\\ProjetoLPF.js',
     'source-map-support/browser-source-map-support.js'
   ],
   output: {
-    path: 'C:\\Users\\oipxt\\Desktop\\LPF\\build\\distributions',
+    path: 'C:\\Users\\oipxt\\Desktop\\LPF teste\\build\\distributions',
     filename: 'ProjetoLPF-unspecified.js'
   },
   devtool: 'eval-source-map'
