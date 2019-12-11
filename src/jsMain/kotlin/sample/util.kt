@@ -21,7 +21,6 @@ fun formatar(mascara: String, elemento: HTMLInputElement) {
             campodetexto.value += texto.substring(0, 1)
         }
     }
-
 }
 
 fun auxValidateCadastro(cpfInput: String, senha1: String, senha2: String): Boolean {
@@ -58,7 +57,6 @@ fun validateCadastro(): Boolean {
 
 
 fun main() {
-    println(document.title)
     if (document.title == "Tela de Cadastro") {
         formatar("###.###.###-##", document.getElementById("cpf_input_cadastro") as HTMLInputElement)
         if (document.getElementById("erro") != null) {
@@ -86,10 +84,8 @@ fun main() {
     } else if (document.title == "Home") {
         println("pagina Home achada")
         if (document.getElementById("sala nao existe") != null) {
-            println("sala nao existe achado")
             window.alert("sala não existe")
             document.location?.href = "/home?CPF=${(document.getElementById("cpfInput") as HTMLInputElement).value}"
         }
-
     }
 }

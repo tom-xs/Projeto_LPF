@@ -215,7 +215,8 @@ fun main() {
                                 id = "layout"
                                 h1 {
                                     a {
-                                        +"Poli Class"
+                                        href = "/home?CPF=${parametros["CPF"]!!.replace("?","")}"
+                                        +"POLI CLASS"
                                     }
                                 }
                             }
@@ -288,11 +289,16 @@ fun main() {
                                 }
                             }
                             div {
-                                if (parametros["aviso"] == "sala+criada")
+                                if (parametros["aviso"] == "sala criada")
                                     id = "sala criada"
+                                else
+                                    id = "vazio"
 
                             }
+                            script(src = "/static/kotlin_to_js/kotlin.js") {}
+                            script(src = "/static/ProjetoLPF.js") {}
                         }
+
                     }
             }
             get("/home") {
@@ -312,6 +318,7 @@ fun main() {
                             classes = setOf("cabeçalho")
                             h1 {
                                 a {
+                                    href = "/"
                                     +"POLI CLASS"
                                 }
                             }

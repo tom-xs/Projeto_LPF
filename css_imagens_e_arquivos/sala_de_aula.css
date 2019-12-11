@@ -53,3 +53,7 @@ input#bottom_submit {
 fieldset#message {
     width: 97%;
 }
+h1,a {
+     color: black;
+     font-family: Inconsolata;
+ }

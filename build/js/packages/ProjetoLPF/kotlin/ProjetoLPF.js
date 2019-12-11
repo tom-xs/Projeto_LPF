@@ -83,7 +83,6 @@
   }
   function main() {
     var tmp$, tmp$_0, tmp$_1, tmp$_2, tmp$_3, tmp$_4, tmp$_5, tmp$_6;
-    println(document.title);
     if (equals(document.title, 'Tela de Cadastro')) {
       formatar('###.###.###-##', Kotlin.isType(tmp$ = document.getElementById('cpf_input_cadastro'), HTMLInputElement) ? tmp$ : throwCCE());
       if (document.getElementById('erro') != null) {
@@ -107,7 +106,6 @@
      else if (equals(document.title, 'Home')) {
       println('pagina Home achada');
       if (document.getElementById('sala nao existe') != null) {
-        println('sala nao existe achado');
         window.alert('sala n\xE3o existe');
         (tmp$_6 = document.location) != null ? (tmp$_6.href = '/home?CPF=' + (Kotlin.isType(tmp$_5 = document.getElementById('cpfInput'), HTMLInputElement) ? tmp$_5 : throwCCE()).value) : null;
       }

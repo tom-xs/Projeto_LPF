@@ -9,3 +9,7 @@ div#msg_boas_vindas {
     text-align: center;
     font-size: 15px;
 }
+h1,a {
+    color: black;
+    font-family: Inconsolata;
+}
