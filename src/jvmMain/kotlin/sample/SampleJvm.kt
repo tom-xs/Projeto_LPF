@@ -47,11 +47,13 @@ fun getUsuario(cpf: String?): String {
 }
 
 fun checaExistenciaConta(cpf: String): Boolean {
-    arquivoContas.readLines().forEach { x ->
-        if (x.contains("/CPF=$cpf/")) {
-            return true
-        }
-    }
+    if (arquivoContas.exists())
+        arquivoContas.readLines().forEach { x ->
+            if (x.contains("/CPF=$cpf/")) {
+                return true
+            }
+        } else
+        return false
     return false
 }
 
@@ -87,11 +89,11 @@ fun getUsuarioClasse(cpf: String?): Usuario {
 fun addCpfToSalaFile(sala: Sala) {
     val novodocumento: String = arquivoContas.readText()
     var stringpramodificar = ""
-    if(arquivoContas.exists())
-    arquivoContas.readLines().forEach { x ->
-        if (x.contains("Sala={id=${sala.id}/"))
-            stringpramodificar = x
-    }
+    if (arquivoContas.exists())
+        arquivoContas.readLines().forEach { x ->
+            if (x.contains("Sala={id=${sala.id}/"))
+                stringpramodificar = x
+        }
     var listaString = "["
     sala.listaCPFs.forEach { x ->
         if (sala.listaCPFs[sala.listaCPFs.size - 1] != x)
@@ -130,8 +132,7 @@ fun main() {
                 if (!arquivoContas.exists()) {
                     arquivoContas.writeText("")
                     call.respondRedirect("/?aviso=login+nao+encontrado")
-                }
-                else
+                } else
                     if (checaCPFSENHA(login["CPF"], login["senha"])) {
                         call.respondRedirect("/home?CPF=${login["CPF"]}")
                     } else {
@@ -145,10 +146,14 @@ fun main() {
                     //aviso = "conta ja existente, criar outra"
                     call.respondRedirect("/cadastrar?aviso=cpf+ja+usado")
                 } else {
-                    arquivoContas.writeText(
-                        "${parametros["tipo"]}/CPF=${parametros["CPF"]}/senha=${parametros["senha"]}/"
-                                + "\n---\n" + arquivoContas.readText()
-                    )
+                    if (arquivoContas.exists())
+                        arquivoContas.writeText(
+                            "${parametros["tipo"]}/CPF=${parametros["CPF"]}/senha=${parametros["senha"]}/"
+                                    + "\n---\n" + arquivoContas.readText()
+                        ) else {
+                        arquivoContas.writeText("${parametros["tipo"]}/CPF=${parametros["CPF"]}/senha=${parametros["senha"]}/"
+                                            + "\n---\n")
+                    }
                     //aviso = "conta criada com sucesso"
                     call.respondRedirect("/?aviso=conta+criada")
                 }
