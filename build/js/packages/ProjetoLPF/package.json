@@ -5,7 +5,7 @@
     "webpack-cli": "3.3.0",
     "source-map-loader": "0.2.4",
     "source-map-support": "0.5.12",
-    "webpack-dev-server": "3.3.1"
+    "webpack-dev-server": "5.2.1"
   },
   "dependencies": {
     "kotlin": "1.3.50"
